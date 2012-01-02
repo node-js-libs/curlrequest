@@ -1,4 +1,5 @@
-var child = require('child_process');
+var child = require('child_process')
+  , cwd = process.cwd();
 
 /**
  * Make curl opts friendlier.
@@ -107,7 +108,7 @@ module.exports = function (options, callback) {
     }
 
     //Spawn the curl process
-    curl = child.spawn('curl', args, { cwd: process.cwd() });
+    curl = child.spawn('curl', args, { cwd: options.cwd || cwd });
 
     //Collection stdout
     curl.stdout.on('data', function (data) {
