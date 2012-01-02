@@ -10,22 +10,21 @@ var child = require('child_process');
 
 module.exports = function (options, callback) {
     if (arguments.length === 1) {
-        if (typeof options === 'function') {
-            callback = options;
-            options = {};
-        } else {
-            var defaults = options, prev = this;
-            return function (options, callback) {
-                if (typeof options === 'object') {
-                    for (var key in defaults) {
-                        if (typeof options[key] === 'undefined') {
-                            options[key] = defaults[key];
-                        }
-                    }
+        var defaults = options;
+        return function (options, callback) {
+            if (typeof options === 'function') {
+                callback = options;
+                options = {};
+            } else if (typeof options === 'string') {
+                options = { url: options };
+            }
+            for (var key in defaults) {
+                if (typeof options[key] === 'undefined') {
+                    options[key] = defaults[key];
                 }
-                prev.apply(prev, arguments);
-            };
-        }
+            }
+            module.exports.call(this, options, callback);
+        };
     }
 
     if (typeof options === 'string') {
