@@ -1,6 +1,16 @@
 var child = require('child_process');
 
 /**
+ * Make curl opts friendlier.
+ */
+
+var curl_map = {
+    retries: 'retry'
+  , timeout: 'max-time'
+  , redirects: 'max-redirs'
+};
+
+/**
  * Make a request with cURL.
  *
  * @param {Object|String} options (optional) - sent as --<key> <value> to curl
@@ -29,6 +39,13 @@ module.exports = function (options, callback) {
 
     if (typeof options === 'string') {
         options = { url: options };
+    }
+
+    for (var key in curl_map) {
+        if (typeof options[key] !== 'undefined') {
+            options[curl_map[key]] = options[key];
+            delete options[key];
+        }
     }
 
     var curl
