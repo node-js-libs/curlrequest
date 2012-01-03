@@ -1,4 +1,5 @@
 var child = require('child_process')
+  , util = require('util')
   , proxy = require('./proxy')
   , cwd = process.cwd();
 
@@ -49,10 +50,10 @@ var default_headers = {
  * @api public
  */
 
-module.exports = function (options, callback) {
+exports.request = function (options, callback) {
     if (arguments.length === 1) {
         var defaults = options;
-        var fn = function (options, callback) {
+        return function (options, callback) {
             if (typeof options === 'function') {
                 callback = options;
                 options = {};
@@ -64,11 +65,8 @@ module.exports = function (options, callback) {
                     options[key] = defaults[key];
                 }
             }
-            module.exports.call(this, options, callback);
+            exports.request.call(this, options, callback);
         };
-        fn.urls = module.exports.urls;
-        fn.concurrent = module.exports.concurrent;
-        return fn;
     }
 
     if (options.retries) {
@@ -113,6 +111,7 @@ module.exports = function (options, callback) {
       , complete
       , cleanup
       , postprocess
+      , require_str
       , scope = {}
       , timeout;
 
@@ -150,6 +149,15 @@ module.exports = function (options, callback) {
             options['use-ascii'] = true;
         }
         delete options.encoding;
+    }
+
+    //Check for the occurrence of a string and fail if not found
+    if (options.require) {
+        require_str = options.require;
+        if (!Array.isArray(require_str)) {
+            require_str = [require_str];
+        }
+        delete options.require;
     }
 
     //Call the callback in a custom scope
@@ -225,7 +233,26 @@ module.exports = function (options, callback) {
         if (encoding) {
             stdout = stdout.toString(encoding);
         }
-        if (postprocess) {
+        if (require_check) {
+            var valid = false;
+            if (!encoding) {
+                stdout = stdout.toString();
+            }
+            for (var i = 0, l = require_str; i < l; i++) {
+                if ((util.isRegExp(require_str[i]) && require_str[i].test(stdout))
+                        || stdout.indexOf(require_str[i]) !== -1) {
+                    valid = true;
+                    break;
+                }
+            }
+            if (!valid) {
+                stderr = 'required string not found';
+                stdout = null
+            } else if (!encoding) {
+                stdout = new Buffer(stdout);
+            }
+        }
+        if (postprocess && stdout) {
             stdout = postprocess(stdout);
         }
         finish();
@@ -242,7 +269,7 @@ module.exports = function (options, callback) {
 
 var urls = /(?:href|src|HREF|SRC)=["']?([^"' >]+)/g;
 
-module.exports.urls = function (data, regex) {
+exports.urls = function (data, regex) {
     var match, matches = [];
     while (match = urls.exec(data)) {
         if (regex && !regex.test(match[1])) {
@@ -257,7 +284,7 @@ module.exports.urls = function (data, regex) {
  * A helper for handling async concurrency.
  */
 
-module.exports.concurrent = function (input, concurrency, fn) {
+exports.concurrent = function (input, concurrency, fn) {
     if (arguments.length === 3) {
         var len = input.length, pos = 0;
         for (var i = 0; i < concurrency; i++) {
