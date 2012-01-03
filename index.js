@@ -67,6 +67,7 @@ module.exports = function (options, callback) {
             module.exports.call(this, options, callback);
         };
         fn.urls = module.exports.urls;
+        fn.concurrent = module.exports.concurrent;
         return fn;
     }
 
