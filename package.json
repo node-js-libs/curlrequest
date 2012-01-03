@@ -1,6 +1,6 @@
 { "name"          : "curlrequest",
   "description"   : "A curl wrapper for node",
-  "version"       : "0.1.6",
+  "version"       : "0.1.7",
   "homepage"      : "https://github.com/chriso/curlrequest",
   "author"        : "Chris O'Hara <cohara87@gmail.com>",
   "main"          : "index",

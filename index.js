@@ -252,3 +252,27 @@ module.exports.urls = function (data, regex) {
     return matches;
 };
 
+/**
+ * A helper for handling async concurrency.
+ */
+
+module.exports.concurrent = function (input, concurrency, fn) {
+    if (arguments.length === 3) {
+        for (var i = 0; i < concurrency; i++) {
+            (function exec() {
+                check(input.shift(), function () {
+                    process.nextTick(exec);
+                });
+            })();
+        }
+    } else {
+        for (var i = 0; i < concurrency; i++) {
+            (function exec() {
+                check(function () {
+                    process.nextTick(exec);
+                });
+            })();
+        }
+    }
+};
+
