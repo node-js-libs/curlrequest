@@ -259,14 +259,17 @@ module.exports.urls = function (data, regex) {
 
 module.exports.concurrent = function (input, concurrency, fn) {
     if (arguments.length === 3) {
+        var len = input.length, pos = 0;
         for (var i = 0; i < concurrency; i++) {
             (function exec() {
-                fn(input.shift(), function () {
+                fn(pos >= len ? null : input[pos++], function () {
                     process.nextTick(exec);
                 });
             })();
         }
     } else {
+        fn = concurrency;
+        concurrency = input;
         for (var i = 0; i < concurrency; i++) {
             (function exec() {
                 fn(function () {
