@@ -75,7 +75,6 @@ module.exports = function (options, callback) {
         delete options.retries;
         return (function curl() {
             module.exports(options, function (err) {
-                console.log('[%s] %s', remaining, err);
                 if (!err || !--remaining) {
                     return callback.apply(this, arguments);
                 }
