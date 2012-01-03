@@ -260,7 +260,7 @@ module.exports.concurrent = function (input, concurrency, fn) {
     if (arguments.length === 3) {
         for (var i = 0; i < concurrency; i++) {
             (function exec() {
-                check(input.shift(), function () {
+                fn(input.shift(), function () {
                     process.nextTick(exec);
                 });
             })();
@@ -268,7 +268,7 @@ module.exports.concurrent = function (input, concurrency, fn) {
     } else {
         for (var i = 0; i < concurrency; i++) {
             (function exec() {
-                check(function () {
+                fn(function () {
                     process.nextTick(exec);
                 });
             })();
