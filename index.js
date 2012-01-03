@@ -179,7 +179,12 @@ exports.request = function (options, callback) {
     }
     if (options.headers) {
         for (key in options.headers) {
-            //TODO: Fix header keys, encode values?
+            key = key.replace(/[_-]/g, ' ').split(' ').map(function (str) {
+                if (str.length) {
+                    str = str[0].toUpperCase() + str.substr(1);
+                }
+                return str;
+            }).join('-');
             headers[key] = options.headers[key];
         }
         delete options.headers;
@@ -275,7 +280,7 @@ exports.urls = function (data, regex) {
         if (regex && !regex.test(match[1])) {
             continue;
         }
-        matches.push(match[1]);
+        matches.push(match[1].replace(/[\r\n\t\s]/g, ''));
     }
     return matches;
 };
