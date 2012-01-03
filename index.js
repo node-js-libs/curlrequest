@@ -233,7 +233,7 @@ exports.request = function (options, callback) {
         if (encoding) {
             stdout = stdout.toString(encoding);
         }
-        if (require_check) {
+        if (require_str) {
             var valid = false;
             if (!encoding) {
                 stdout = stdout.toString();
