@@ -18,8 +18,9 @@ var curl_map = {
  * Default user-agents.
  */
 
-var user_agents = fs.readFileSync('useragents.txt').toString().split('\n').slice(0, -1)
-  , user_agent_len = user_agents.length;
+var ua_file = __dirname + '/useragents.txt'
+  , user_agents = fs.readFileSync(ua_file).toString().split('\n').slice(0, -1)
+  , user_agents_len = user_agents.length;
 
 /**
  * Default request headers.
@@ -62,7 +63,7 @@ exports.request = function (options, callback) {
         var remaining = options.retries;
         delete options.retries;
         return (function curl() {
-            module.exports(options, function (err) {
+            exports.request(options, function (err) {
                 if (!err || !--remaining) {
                     return callback.apply(this, arguments);
                 }
@@ -185,7 +186,7 @@ exports.request = function (options, callback) {
 
     //Select a random user agent if one wasn't provided
     if (!headers['User-Agent'] && !options['user-agent']) {
-        options['user-agent'] = user_agents[Math.random() * user_agent_len | 0];
+        options['user-agent'] = user_agents[Math.random() * user_agents_len | 0];
     }
 
     //Prepare curl args
