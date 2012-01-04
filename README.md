@@ -85,7 +85,7 @@ Pass in a function which modifies the response body before sending it to
 the callback. Useful if you need to modify the response in some way before
 a higher level library has the chance to modify it.
 
-#### Passing options directly to curl
+### Passing options directly to curl
 
 Any additional options are sent as command line options to curl. See `man
 curl` or `curl --manual` for a detailed description of options and usage.
@@ -107,11 +107,11 @@ curl.request(options, function (err, parts) {
 ```javascript
 var options = {
     url: 'example.com/some/large/file.zip'
-  , 'limit-rate': '500k' //500kb/s
-  , encoding: null       //return a buffer
+  , 'limit-rate': '500k'
+  , encoding: null
 }
 
 curl.request(options, function (err, file) {
-    //...
+    //file is a Buffer
 })
 ```
