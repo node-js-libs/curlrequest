@@ -18,7 +18,7 @@ Make a request with curl - callback receives `(stderr, stdout)` on request
 completion
 
 ```javascript
-curl.request(options, callback)
+curl.request(options, callback);
 ```
 
 Note that you can also call `curl.request(url, callback)` which is
@@ -27,9 +27,9 @@ shorthand for `curl.request({ url: url }, callback)`.
 To setup default options and return a function that can be used later
 
 ```javascript
-var request = curl.request(default_options)
+var request = curl.request(default_options);
 
-request([options ,] callback)
+request([options ,] callback);
 ```
 
 ## Options
@@ -93,13 +93,13 @@ curl` or `curl --manual` for a detailed description of options and usage.
 **Example 1**. Include response headers in the output
 
 ```javascript
-var options = { url: 'google.com', include: true }
+var options = { url: 'google.com', include: true };
 
 curl.request(options, function (err, parts) {
-    parts = parts.split('\r\n')
+    parts = parts.split('\r\n');
     var data = parts.pop()
-      , head = parts.pop()
-})
+      , head = parts.pop();
+});
 ```
 
 **Example 2**. Limit the download speed of a transfer
@@ -109,9 +109,33 @@ var options = {
     url: 'example.com/some/large/file.zip'
   , 'limit-rate': '500k'
   , encoding: null
-}
+};
 
 curl.request(options, function (err, file) {
     //file is a Buffer
-})
+});
 ```
+
+## License
+
+Copyright (c) 2012 Chris O'Hara <cohara87@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
