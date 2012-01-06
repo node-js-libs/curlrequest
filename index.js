@@ -142,6 +142,15 @@ exports.request = function (options, callback) {
         delete options.encoding;
     }
 
+    //Parse POST data
+    if (options.data && typeof options.data === 'object') {
+        var data = [];
+        for (var key in options.data) {
+            data.push(encodeURIComponent(key) + '=' + encodeURIComponent(options.data[key]));
+        }
+        options.data = data.join('&');
+    }
+
     //Check for the occurrence of a string and fail if not found
     if (options.require) {
         require_str = options.require;
