@@ -103,11 +103,12 @@ exports.request = function (options, callback) {
       , postprocess
       , require_str
       , scope = {}
+      , cmd = 'curl ' + args.join(' ')
       , timeout;
 
     function finish() {
         callback.call(scope, stderr, stdout, {
-            cmd: 'curl ' + args.join(' ')
+            cmd: cmd
           , time: (new Date().getTime() - start.getTime())
         });
         complete = true;
@@ -281,12 +282,18 @@ exports.urls = function (data, regex) {
 
 exports.concurrent = function (input, concurrency, fn) {
     if (arguments.length === 3) {
-        var len = input.length, pos = 0;
+        var len = input.length, pos = 0, remaining = concurrency;
         for (var i = 0; i < concurrency; i++) {
             (function exec() {
-                fn(pos >= len ? null : input[pos++], function () {
-                    process.nextTick(exec);
-                });
+                if (pos >= len) {
+                    if (!--remaining) {
+                        fn(null, function () {});
+                    }
+                } else {
+                    fn(input[pos++], function () {
+                        process.nextTick(exec);
+                    });
+                }
             })();
         }
     } else {
