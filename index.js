@@ -202,10 +202,20 @@ exports.request = function (options, callback) {
         });
     }
 
-    //Spawn the curl process
-    curl = child.spawn('curl', args, { cwd: options.cwd || cwd });
+    if (!options.file) {
 
-    //Collection stdout
+        //Spawn the curl process
+        curl = child.spawn('curl', args, { cwd: options.cwd || cwd });
+
+    } else {
+
+        //Open a file and process it like a request?
+        curl = child.spawn('cat', [options.file], { cwd: options.cwd || cwd });
+        cmd = 'cat ' + options.file;
+
+    }
+
+    //Collect stdout
     curl.stdout.on('data', function (data) {
         if (complete) return;
         var len = data.length, prev = stdout;

@@ -85,6 +85,11 @@ Pass in a function which modifies the response body before sending it to
 the callback. Useful if you need to modify the response in some way before
 a higher level library has the chance to modify it.
 
+**file** - *default: false*
+
+Open a file and process it like a request response, useful if using
+temporary files.
+
 ### Passing options directly to curl
 
 Any additional options are sent as command line options to curl. See `man
