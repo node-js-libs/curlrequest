@@ -7,10 +7,14 @@ $ npm install curlrequest
 ## Why?
 
 - Curl is mature, stable, and fast
-- More features than any of the node.js request libraries
+- More features than any of the node.js request libraries. A lot of
+  logic that you would build on top of a request library probably
+  already exists in curl
 - Separate requests/processes take advantage of all CPUs
 - Spawning processes is relatively cheap and still non-blocking
 - Better control over request timeouts. If a request has hung just kill the process
+
+Note: don't use this if you need to stream the response - use [mikeal/request](https://github.com/mikeal/request) instead
 
 ## Usage
 
@@ -34,58 +38,58 @@ request([options ,] callback);
 
 ## Options
 
-**url**
+`url`
 
 The request url.
 
-**encoding** - *default: utf8*
+`encoding` - *default: utf8*
 
 Encode the response body as either `utf` or `ascii`. Set to `null` return a
 buffer.
 
-**headers** - *default: {}*
+`headers` - *default: {}*
 
 Set request headers, e.g. `headers: { accept: 'text/*' }`
 
-**useragent** - *default: <random>*
+`useragent` - *default: <random>*
 
 Set the request user-agent.
 
-**location** - *default: true*
+`location` - *default: true*
 
 Whether to follow 30x redirects or not.
 
-**redirects** - *default: 3*
+`redirects` - *default: 3*
 
 The maximum amount of redirects to follow before failing with "retries".
 
-**retries** - *default: 0*
+`retries` - *default: 0*
 
 How many times to retry the request in the case of failure.
 
-**timeout** - *default: false*
+`timeout` - *default: false*
 
 The maximum amount of seconds the request can take before failing with
 error "timeout".
 
-**scope** - *default: {}*
+`scope` - *default: {}*
 
 The scope to call the callback in.
 
-**require** - *default: null*
+`require` - *default: null*
 
 Pass a string or regular expression to search for in the response body. If
 there's no match, fail the request with "required string not found". You
 can also pass an array of strings / regexps to search for where only one
 has to match.
 
-**process** - *default: false*
+`process` - *default: false*
 
 Pass in a function which modifies the response body before sending it to
 the callback. Useful if you need to modify the response in some way before
 a higher level library has the chance to modify it.
 
-**file** - *default: false*
+`file` - *default: false*
 
 Open a file and process it like a request response, useful if using
 temporary files.
