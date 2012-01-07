@@ -266,7 +266,7 @@ exports.request = function (options, callback) {
             if (!encoding) {
                 stdout = stdout.toString();
             }
-            for (var i = 0, l = require_str; i < l; i++) {
+            for (var i = 0, l = require_str.length; i < l; i++) {
                 if ((util.isRegExp(require_str[i]) && require_str[i].test(stdout))
                         || stdout.indexOf(require_str[i]) !== -1) {
                     valid = true;
@@ -285,7 +285,7 @@ exports.request = function (options, callback) {
             if (!encoding) {
                 stdout = stdout.toString();
             }
-            for (var i = 0, l = require_str; i < l; i++) {
+            for (var i = 0, l = require_not_str.length; i < l; i++) {
                 if ((util.isRegExp(require_not_str[i]) && require_not_str[i].test(stdout))
                         || stdout.indexOf(require_not_str[i]) !== -1) {
                     valid = false;
