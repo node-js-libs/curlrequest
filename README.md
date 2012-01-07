@@ -21,7 +21,7 @@ Note: don't use this if you need to stream the response - use
 
 ## Usage
 
-Make a request with curl - callback receives `(stderr, stdout)` on request
+Make a request with curl - callback receives `(err, stdout)` on request
 completion
 
 ```javascript
@@ -44,6 +44,10 @@ request([options ,] callback);
 `url`
 
 The request url.
+
+`method` - *default: GET*
+
+The request method.
 
 `encoding` - *default: utf8*
 
@@ -104,6 +108,11 @@ a higher level library has the chance to modify it.
 
 Open a file and process it like a request response, useful if using
 temporary files.
+
+`stderr` - *default: true*
+
+Pipe the stderr of each curl process to the main process. Set this to a
+string to write stderr to a file, or false to disable stderr.
 
 ### Passing options directly to curl
 

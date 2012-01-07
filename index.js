@@ -2,6 +2,7 @@ var child = require('child_process')
   , util = require('util')
   , fs = require('fs')
   , proxy = require('./proxy')
+  , errors = require('./errors')
   , cwd = process.cwd();
 
 /**
@@ -11,6 +12,7 @@ var child = require('child_process')
 var curl_map = {
     timeout: 'max-time'
   , redirects: 'max-redirs'
+  , method: 'request'
   , useragent: 'user-agent'
 };
 
@@ -92,9 +94,9 @@ exports.request = function (options, callback) {
     }
 
     var curl
-      , args = ['--silent', '--show-error', '--no-buffer']
+      , args = ['--silent', '--show-error', '--no-buffer', '--no-keepalive']
       , start = new Date
-      , stderr = ''
+      , err
       , stdoutlen
       , stdout = new Buffer(stdoutlen = 0)
       , encoding
@@ -108,7 +110,10 @@ exports.request = function (options, callback) {
       , timeout;
 
     function finish() {
-        callback.call(scope, stderr, stdout, {
+        if (err in errors) {
+            err = errors[err];
+        }
+        callback.call(scope, err, stdout, {
             cmd: cmd
           , time: (new Date().getTime() - start.getTime())
         });
@@ -244,17 +249,19 @@ exports.request = function (options, callback) {
         stdoutlen += len;
     });
 
-    //Collect stderr
-    curl.stderr.setEncoding('utf8');
-    curl.stderr.on('data', function (data) {
-        if (complete) return;
-        stderr += data;
-    });
+    //Pipe stderr to the current process
+    if (options.stderr) {
+        if (options.stderr === false) {
+            delete options.stderr;
+        }
+    } else {
+        curl.stderr.pipe(process.stderr);
+    }
 
     //Handle curl exit
-    curl.on('exit', function () {
+    curl.on('exit', function (code) {
+        err = code;
         if (complete) return;
-        stderr = stderr.length ? stderr.trim().split('\n',1)[0] : null;
         if (encoding) {
             stdout = stdout.toString(encoding);
         }
@@ -274,7 +281,7 @@ exports.request = function (options, callback) {
                 }
             }
             if (!valid) {
-                stderr = 'response does not contain required string(s)';
+                err = 'response does not contain required string(s)';
                 stdout = null
             } else if (!encoding) {
                 stdout = new Buffer(stdout);
@@ -293,7 +300,7 @@ exports.request = function (options, callback) {
                 }
             }
             if (!valid) {
-                stderr = 'response contains bad string(s)';
+                err = 'response contains bad string(s)';
                 stdout = null
             } else if (!encoding) {
                 stdout = new Buffer(stdout);
