@@ -6,15 +6,18 @@ $ npm install curlrequest
 
 ## Why?
 
-- Curl is mature, stable, and fast
-- More features than any of the node.js request libraries. A lot of
-  logic that you would build on top of a request library probably
-  already exists in curl
-- Separate requests/processes take advantage of all CPUs
-- Spawning processes is relatively cheap and still non-blocking
-- Better control over request timeouts. If a request has hung just kill the process
+Curl has significantly more features than any of the node.js request
+libraries. A lot of the logic that you would build on top of a node.js
+request library (rate limiting, URL globbing, uploading/downloading
+file, better proxy support) already exists in curl
 
-Note: don't use this if you need to stream the response - use [mikeal/request](https://github.com/mikeal/request) instead
+- Curl is mature, stable, and fast
+- Separate requests/processes take advantage of all CPUs
+- Spawning processes is relatively cheap and non-blocking
+- Better control over connect, request, and retry timeouts. If a request has hung just kill the process
+
+Note: don't use this if you need to stream the response - use
+[mikeal/request](https://github.com/mikeal/request) instead
 
 ## Usage
 
@@ -50,6 +53,10 @@ buffer.
 `headers` - *default: {}*
 
 Set request headers, e.g. `headers: { accept: 'text/*' }`
+
+`data` - *default: false*
+
+An object containing data to urlencode and then POST.
 
 `useragent` - *default: <random>*
 
