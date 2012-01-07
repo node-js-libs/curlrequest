@@ -68,7 +68,7 @@ Whether to follow 30x redirects or not.
 
 `redirects` - *default: 3*
 
-The maximum amount of redirects to follow before failing with "retries".
+The maximum amount of redirects to follow before failing with error "retries".
 
 `retries` - *default: 0*
 
@@ -89,6 +89,10 @@ Pass a string or regular expression to search for in the response body. If
 there's no match, fail the request with "required string not found". You
 can also pass an array of strings / regexps to search for where only one
 has to match.
+
+`require_not`
+
+The inverse of `require` - fail if the response contains a string.
 
 `process` - *default: false*
 

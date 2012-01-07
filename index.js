@@ -102,6 +102,7 @@ exports.request = function (options, callback) {
       , cleanup
       , postprocess
       , require_str
+      , require_not_str
       , scope = {}
       , cmd = 'curl ' + args.join(' ')
       , timeout;
@@ -158,6 +159,15 @@ exports.request = function (options, callback) {
             require_str = [require_str];
         }
         delete options.require;
+    }
+
+    //Check for the occurrence of a string and fail if found
+    if (options.require_not) {
+        require_not_str = options.require_not;
+        if (!Array.isArray(require_not_str)) {
+            require_not_str = [require_not_str];
+        }
+        delete options.require_not;
     }
 
     //Call the callback in a custom scope
@@ -248,6 +258,9 @@ exports.request = function (options, callback) {
         if (encoding) {
             stdout = stdout.toString(encoding);
         }
+        if (postprocess && stdout) {
+            stdout = postprocess(stdout);
+        }
         if (require_str) {
             var valid = false;
             if (!encoding) {
@@ -261,21 +274,35 @@ exports.request = function (options, callback) {
                 }
             }
             if (!valid) {
-                stderr = 'required string not found';
+                stderr = 'response does not contain required string(s)';
                 stdout = null
             } else if (!encoding) {
                 stdout = new Buffer(stdout);
             }
         }
-        if (postprocess && stdout) {
-            stdout = postprocess(stdout);
+        if (require_not_str) {
+            var valid = true;
+            if (!encoding) {
+                stdout = stdout.toString();
+            }
+            for (var i = 0, l = require_str; i < l; i++) {
+                if ((util.isRegExp(require_not_str[i]) && require_not_str[i].test(stdout))
+                        || stdout.indexOf(require_not_str[i]) !== -1) {
+                    valid = false;
+                    break;
+                }
+            }
+            if (!valid) {
+                stderr = 'response contains bad string(s)';
+                stdout = null
+            } else if (!encoding) {
+                stdout = new Buffer(stdout);
+            }
         }
         finish();
         if (timeout) clearTimeout(timeout);
     });
 
-    //For piping
-    return curl.stdout;
 };
 
 /**
