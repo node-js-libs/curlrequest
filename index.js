@@ -1,6 +1,6 @@
-var child = require('child_process')
-  , util = require('util')
+var util = require('util')
   , fs = require('fs')
+  , spawn = require('./spawn')
   , proxy = require('./proxy')
   , errors = require('./errors')
   , cwd = process.cwd();
@@ -226,90 +226,88 @@ exports.request = function (options, callback) {
         });
     }
 
-    if (!options.file) {
+    var proc_cmd = 'curl'
+      , proc_options = { cwd: options.cwd || cwd };
 
-        //Spawn the curl process
-        curl = child.spawn('curl', args, { cwd: options.cwd || cwd });
-
-    } else {
-
-        //Open a file and process it like a request?
-        curl = child.spawn('cat', [options.file], { cwd: options.cwd || cwd });
+    if (options.file) {
+        proc_cmd = 'cat';
+        args = [options.file];
         cmd = 'cat ' + options.file;
-
     }
 
-    //Collect stdout
-    curl.stdout.on('data', function (data) {
-        if (complete) return;
-        var len = data.length, prev = stdout;
-        stdout = new Buffer(len + stdoutlen);
-        prev.copy(stdout, 0, 0, stdoutlen);
-        data.copy(stdout, stdoutlen, 0, len);
-        stdoutlen += len;
-    });
+    //Spawn the process
+    spawn(proc_cmd, args, options, function (curl) {
 
-    //Pipe stderr to the current process
-    if (options.stderr) {
-        if (options.stderr === false) {
-            delete options.stderr;
-        }
-    } else {
-        curl.stderr.pipe(process.stderr);
-    }
+        //Collect stdout
+        curl.stdout.on('data', function (data) {
+            if (complete) return;
+            var len = data.length, prev = stdout;
+            stdout = new Buffer(len + stdoutlen);
+            prev.copy(stdout, 0, 0, stdoutlen);
+            data.copy(stdout, stdoutlen, 0, len);
+            stdoutlen += len;
+        });
 
-    //Handle curl exit
-    curl.on('exit', function (code) {
-        err = code;
-        if (complete) return;
-        if (encoding) {
-            stdout = stdout.toString(encoding);
-        }
-        if (postprocess && stdout) {
-            stdout = postprocess(stdout);
-        }
-        if (require_str) {
-            var valid = false;
-            if (!encoding) {
-                stdout = stdout.toString();
+        //Pipe stderr to the current process?
+        if (options.stderr) {
+            if (options.stderr === true) {
+                curl.stderr.pipe(process.stderr);
+                delete options.stderr
             }
-            for (var i = 0, l = require_str.length; i < l; i++) {
-                if ((util.isRegExp(require_str[i]) && require_str[i].test(stdout))
-                        || stdout.indexOf(require_str[i]) !== -1) {
-                    valid = true;
-                    break;
+        }
+
+        //Handle curl exit
+        curl.on('exit', function (code) {
+            err = code;
+            if (complete) return;
+            if (encoding) {
+                stdout = stdout.toString(encoding);
+            }
+            if (postprocess && stdout) {
+                stdout = postprocess(stdout);
+            }
+            if (require_str) {
+                var valid = false;
+                if (!encoding) {
+                    stdout = stdout.toString();
+                }
+                for (var i = 0, l = require_str.length; i < l; i++) {
+                    if ((util.isRegExp(require_str[i]) && require_str[i].test(stdout))
+                            || stdout.indexOf(require_str[i]) !== -1) {
+                        valid = true;
+                        break;
+                    }
+                }
+                if (!valid) {
+                    err = 'response does not contain required string(s)';
+                    stdout = null
+                } else if (!encoding) {
+                    stdout = new Buffer(stdout);
                 }
             }
-            if (!valid) {
-                err = 'response does not contain required string(s)';
-                stdout = null
-            } else if (!encoding) {
-                stdout = new Buffer(stdout);
-            }
-        }
-        if (require_not_str) {
-            var valid = true;
-            if (!encoding) {
-                stdout = stdout.toString();
-            }
-            for (var i = 0, l = require_not_str.length; i < l; i++) {
-                if ((util.isRegExp(require_not_str[i]) && require_not_str[i].test(stdout))
-                        || stdout.indexOf(require_not_str[i]) !== -1) {
-                    valid = false;
-                    break;
+            if (require_not_str) {
+                var valid = true;
+                if (!encoding) {
+                    stdout = stdout.toString();
+                }
+                for (var i = 0, l = require_not_str.length; i < l; i++) {
+                    if ((util.isRegExp(require_not_str[i]) && require_not_str[i].test(stdout))
+                            || stdout.indexOf(require_not_str[i]) !== -1) {
+                        valid = false;
+                        break;
+                    }
+                }
+                if (!valid) {
+                    err = 'response contains bad string(s)';
+                    stdout = null
+                } else if (!encoding) {
+                    stdout = new Buffer(stdout);
                 }
             }
-            if (!valid) {
-                err = 'response contains bad string(s)';
-                stdout = null
-            } else if (!encoding) {
-                stdout = new Buffer(stdout);
-            }
-        }
-        finish();
-        if (timeout) clearTimeout(timeout);
+            finish();
+            if (timeout) clearTimeout(timeout);
+        });
     });
-
 };
 
 /**

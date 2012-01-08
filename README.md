@@ -109,10 +109,10 @@ a higher level library has the chance to modify it.
 Open a file and process it like a request response, useful if using
 temporary files.
 
-`stderr` - *default: true*
+`stderr` - *default: false*
 
 Pipe the stderr of each curl process to the main process. Set this to a
-string to write stderr to a file, or false to disable stderr.
+string to write stderr to a file.
 
 ### Passing options directly to curl
 
