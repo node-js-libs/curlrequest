@@ -145,6 +145,20 @@ curl.request(options, function (err, file) {
 });
 ```
 
+**Example 3**. See what's going on under the hood
+
+```javascript
+var options = {
+    url: 'google.com'
+  , verbose: true
+  , stderr: true
+};
+
+curl.request(options, function (err, data) {
+    //..
+});
+```
+
 ## License
 
 Copyright (c) 2012 Chris O'Hara <cohara87@gmail.com>
