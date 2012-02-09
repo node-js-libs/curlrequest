@@ -94,7 +94,7 @@ exports.request = function (options, callback) {
     }
 
     var curl
-      , args = ['--silent', '--show-error', '--no-buffer', '--no-keepalive']
+      , args = ['--silent', '--show-error', '--no-buffer']
       , start = new Date
       , err
       , stdoutlen
