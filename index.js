@@ -121,7 +121,9 @@ exports.request = function (options, callback) {
     }
 
     //Follow location by default
-    if (!options['max-redirs']) {
+    if ('max-redirs' in options) {
+        options.location = !!options['max-redirs'];
+    } else {
         options.location = true;
         options['max-redirs'] = 3;
     }
