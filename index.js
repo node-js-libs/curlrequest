@@ -154,7 +154,7 @@ exports.request = function (options, callback) {
     if (options.data && typeof options.data === 'object') {
         var data = [];
         for (var key in options.data) {
-            data.push(encodeURIComponent(key) + '=' + encodeURIComponent(options.data[key]));
+            data.push(escape(key) + '=' + escape(options.data[key]));
         }
         options.data = data.join('&');
     }
