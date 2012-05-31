@@ -94,6 +94,7 @@ exports.request = function (options, callback) {
     }
 
     var curl
+      , curl_path = 'curl'
       , args = ['--silent', '--show-error', '--no-buffer']
       , start = new Date
       , err
@@ -118,6 +119,12 @@ exports.request = function (options, callback) {
           , time: (new Date().getTime() - start.getTime())
         });
         complete = true;
+    }
+
+    //Allow for a custom curl path
+    if (options.curl_path) {
+        curl_path = options.curl_path;
+        delete options.curl_path;
     }
 
     //Follow location by default
@@ -228,7 +235,7 @@ exports.request = function (options, callback) {
         });
     }
 
-    var proc_cmd = 'curl'
+    var proc_cmd = curl_path
       , proc_options = { cwd: options.cwd || cwd };
 
     if (options.file) {
