@@ -1,3 +1,4 @@
+[![build status](https://secure.travis-ci.org/chriso/curlrequest.png)](http://travis-ci.org/chriso/curlrequest)
 **curlrequest** is a node wrapper for the command line **curl(1)**
 
 ```bash
