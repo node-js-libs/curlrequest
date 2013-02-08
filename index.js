@@ -3,7 +3,8 @@ var util = require('util')
   , spawn = require('./spawn')
   , proxy = require('./proxy')
   , errors = require('./errors')
-  , cwd = process.cwd();
+  , cwd = process.cwd()
+  , u = require('underscore');
 
 /**
  * Make some curl opts friendlier.
@@ -244,80 +245,102 @@ exports.request = function (options, callback) {
         cmd = 'cat ' + options.file;
     }
 
-    //Spawn the process
-    spawn(proc_cmd, args, options, function (curl) {
+    // if the caller just wants the actual command, don't run
+    if (!options.statement) {
 
-        //Collect stdout
-        curl.stdout.on('data', function (data) {
-            if (complete) return;
-            var len = data.length, prev = stdout;
-            stdout = new Buffer(len + stdoutlen);
-            prev.copy(stdout, 0, 0, stdoutlen);
-            data.copy(stdout, stdoutlen, 0, len);
-            stdoutlen += len;
-        });
+        //Spawn the process
+        spawn(proc_cmd, args, options, function (curl) {
 
-        //Pipe stderr to the current process?
-        if (options.stderr) {
-            if (options.stderr === true) {
-                curl.stderr.pipe(process.stderr);
-                delete options.stderr
-            }
-        }
+            //Collect stdout
+            curl.stdout.on('data', function (data) {
+                if (complete) return;
+                var len = data.length, prev = stdout;
+                stdout = new Buffer(len + stdoutlen);
+                prev.copy(stdout, 0, 0, stdoutlen);
+                data.copy(stdout, stdoutlen, 0, len);
+                stdoutlen += len;
+            });
 
-        //Handle curl exit
-        curl.on('exit', function (code) {
-            err = code;
-            if (complete) return;
-            if (encoding) {
-                stdout = stdout.toString(encoding);
-            }
-            if (postprocess && stdout) {
-                stdout = postprocess(stdout);
-            }
-            if (require_str) {
-                var valid = false;
-                if (!encoding) {
-                    stdout = stdout.toString();
+            //Pipe stderr to the current process?
+            if (options.stderr) {
+                if (options.stderr === true) {
+                    curl.stderr.pipe(process.stderr);
+                    delete options.stderr
                 }
-                for (var i = 0, l = require_str.length; i < l; i++) {
-                    if ((util.isRegExp(require_str[i]) && require_str[i].test(stdout))
-                            || stdout.indexOf(require_str[i]) !== -1) {
-                        valid = true;
-                        break;
+            }
+
+            //Handle curl exit
+            curl.on('exit', function (code) {
+                err = code;
+                if (complete) return;
+                if (encoding) {
+                    stdout = stdout.toString(encoding);
+                }
+                if (postprocess && stdout) {
+                    stdout = postprocess(stdout);
+                }
+                if (require_str) {
+                    var valid = false;
+                    if (!encoding) {
+                        stdout = stdout.toString();
+                    }
+                    for (var i = 0, l = require_str.length; i < l; i++) {
+                        if ((util.isRegExp(require_str[i]) && require_str[i].test(stdout))
+                                || stdout.indexOf(require_str[i]) !== -1) {
+                            valid = true;
+                            break;
+                        }
+                    }
+                    if (!valid) {
+                        err = 'response does not contain required string(s)';
+                        stdout = null
+                    } else if (!encoding) {
+                        stdout = new Buffer(stdout);
                     }
                 }
-                if (!valid) {
-                    err = 'response does not contain required string(s)';
-                    stdout = null
-                } else if (!encoding) {
-                    stdout = new Buffer(stdout);
-                }
-            }
-            if (require_not_str) {
-                var valid = true;
-                if (!encoding) {
-                    stdout = stdout.toString();
-                }
-                for (var i = 0, l = require_not_str.length; i < l; i++) {
-                    if ((util.isRegExp(require_not_str[i]) && require_not_str[i].test(stdout))
-                            || stdout.indexOf(require_not_str[i]) !== -1) {
-                        valid = false;
-                        break;
+                if (require_not_str) {
+                    var valid = true;
+                    if (!encoding) {
+                        stdout = stdout.toString();
+                    }
+                    for (var i = 0, l = require_not_str.length; i < l; i++) {
+                        if ((util.isRegExp(require_not_str[i]) && require_not_str[i].test(stdout))
+                                || stdout.indexOf(require_not_str[i]) !== -1) {
+                            valid = false;
+                            break;
+                        }
+                    }
+                    if (!valid) {
+                        err = 'response contains bad string(s)';
+                        stdout = null
+                    } else if (!encoding) {
+                        stdout = new Buffer(stdout);
                     }
                 }
-                if (!valid) {
-                    err = 'response contains bad string(s)';
-                    stdout = null
-                } else if (!encoding) {
-                    stdout = new Buffer(stdout);
-                }
-            }
-            finish();
-            if (timeout) clearTimeout(timeout);
+                finish();
+                if (timeout) clearTimeout(timeout);
+            });
         });
-    });
+
+    } else {
+        return { 'proc_cmd' : proc_cmd, 'args' : args, 'options' : options, };
+    }
 };
+
+exports.statement = function(options) {
+    options.statement = true;
+    options.redirects = null;
+    options.headers = u.defaults(options.headers || {}, { 
+        'Accept' : 'foo',
+        'Accept-Charset' : 'foo',
+        "Accept-Language" : "foo"
+    });
+    options.useragent = 'foo';
+    var cmd = exports.request(options, function() { });
+    cmd.args = u.without(cmd.args, '--show-error', '--no-buffer', '--statement', '--location', '--silent', null, '--max-redirs', '--user-agent', 'foo', false, "Accept-Language: en-US,en;q=0.8", '--header', 'Accept: foo', 'Accept-Charset: foo', 'Accept-Language: foo');
+    return cmd.proc_cmd + " " + cmd.args.join(' ');
+}
+
 
 /**
  * Expose a helper for scraping urls from a page.
