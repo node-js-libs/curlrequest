@@ -107,7 +107,7 @@ exports.request = function (options, callback) {
       , require_str
       , require_not_str
       , scope = {}
-      , cmd = 'curl ' + args.join(' ')
+      , cmd = 'curl'
       , timeout;
 
     function finish() {
@@ -116,6 +116,7 @@ exports.request = function (options, callback) {
         }
         callback.call(scope, err, stdout, {
             cmd: cmd
+          , args: args
           , time: (new Date().getTime() - start.getTime())
         });
         complete = true;
@@ -235,17 +236,13 @@ exports.request = function (options, callback) {
         });
     }
 
-    var proc_cmd = curl_path
-      , proc_options = { cwd: options.cwd || cwd };
-
     if (options.file) {
-        proc_cmd = 'cat';
+        cmd = 'cat';
         args = [options.file];
-        cmd = 'cat ' + options.file;
     }
 
     //Spawn the process
-    spawn(proc_cmd, args, options, function (curl) {
+    child = spawn(cmd, args, { cwd: options.cwd || cwd }, function (curl) {
 
         //Collect stdout
         curl.stdout.on('data', function (data) {
