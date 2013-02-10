@@ -267,51 +267,55 @@ exports.request = function (options, callback) {
 
         //Handle curl exit
         curl.on('exit', function (code) {
-            err = code;
-            if (complete) return;
-            if (encoding) {
-                stdout = stdout.toString(encoding);
-            }
-            if (postprocess && stdout) {
-                stdout = postprocess(stdout);
-            }
-            if (require_str) {
-                var valid = false;
-                if (!encoding) {
-                    stdout = stdout.toString();
+            try {
+                err = code;
+                if (complete) return;
+                if (encoding) {
+                    stdout = stdout.toString(encoding);
                 }
-                for (var i = 0, l = require_str.length; i < l; i++) {
-                    if ((util.isRegExp(require_str[i]) && require_str[i].test(stdout))
-                            || stdout.indexOf(require_str[i]) !== -1) {
-                        valid = true;
-                        break;
+                if (postprocess && stdout) {
+                    stdout = postprocess(stdout);
+                }
+                if (require_str) {
+                    var valid = false;
+                    if (!encoding) {
+                        stdout = stdout.toString();
+                    }
+                    for (var i = 0, l = require_str.length; i < l; i++) {
+                        if ((util.isRegExp(require_str[i]) && require_str[i].test(stdout))
+                                || stdout.indexOf(require_str[i]) !== -1) {
+                            valid = true;
+                            break;
+                        }
+                    }
+                    if (!valid) {
+                        err = 'response does not contain required string(s)';
+                        stdout = null
+                    } else if (!encoding) {
+                        stdout = new Buffer(stdout);
                     }
                 }
-                if (!valid) {
-                    err = 'response does not contain required string(s)';
-                    stdout = null
-                } else if (!encoding) {
-                    stdout = new Buffer(stdout);
-                }
-            }
-            if (require_not_str) {
-                var valid = true;
-                if (!encoding) {
-                    stdout = stdout.toString();
-                }
-                for (var i = 0, l = require_not_str.length; i < l; i++) {
-                    if ((util.isRegExp(require_not_str[i]) && require_not_str[i].test(stdout))
-                            || stdout.indexOf(require_not_str[i]) !== -1) {
-                        valid = false;
-                        break;
+                if (require_not_str) {
+                    var valid = true;
+                    if (!encoding) {
+                        stdout = stdout.toString();
+                    }
+                    for (var i = 0, l = require_not_str.length; i < l; i++) {
+                        if ((util.isRegExp(require_not_str[i]) && require_not_str[i].test(stdout))
+                                || stdout.indexOf(require_not_str[i]) !== -1) {
+                            valid = false;
+                            break;
+                        }
+                    }
+                    if (!valid) {
+                        err = 'response contains bad string(s)';
+                        stdout = null
+                    } else if (!encoding) {
+                        stdout = new Buffer(stdout);
                     }
                 }
-                if (!valid) {
-                    err = 'response contains bad string(s)';
-                    stdout = null
-                } else if (!encoding) {
-                    stdout = new Buffer(stdout);
-                }
+            } catch (e) {
+                err = typeof e === 'object' ? e.message || '' : e;
             }
             finish();
             if (timeout) clearTimeout(timeout);
