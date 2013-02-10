@@ -241,6 +241,11 @@ exports.request = function (options, callback) {
         args = [options.file];
     }
 
+    //Simulate the spawn?
+    if (options.pretend) {
+        return finish();
+    }
+
     //Spawn the process
     child = spawn(cmd, args, { cwd: options.cwd || cwd }, function (curl) {
 
