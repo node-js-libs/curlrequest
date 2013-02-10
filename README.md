@@ -114,6 +114,17 @@ temporary files.
 Pipe the stderr of each curl process to the main process. Set this to a
 string to write stderr to a file.
 
+`pretend` - *default: false*
+
+Useful if you want to see what curl command is to be executed without actually
+making the request
+
+```javascript
+curl.request({ url: 'http://google.com', pretend: true }, function (err, stdout, meta) {
+    console.log('%s %s', meta.cmd, meta.args.join(' '));
+});
+```
+
 ### Passing options directly to curl
 
 Any additional options are sent as command line options to curl. See `man
