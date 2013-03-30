@@ -76,6 +76,8 @@ exports.request = function (options, callback) {
 
     if (typeof options === 'string') {
         options = { url: options };
+    } else {
+        options = exports.copy(options);
     }
 
     for (var key in curl_map) {
@@ -373,5 +375,21 @@ exports.concurrent = function (input, concurrency, fn) {
             })();
         }
     }
+};
+
+/**
+ * A helper for copying an object.
+ */
+
+exports.copy = function (obj) {
+    var copy = {};
+    for (var i in obj) {
+        if (typeof obj[i] === 'object') {
+            copy[i] = exports.copy(obj[i]);
+        } else {
+            copy[i] = obj[i];
+        }
+    }
+    return copy;
 };
 
