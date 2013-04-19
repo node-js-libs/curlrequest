@@ -249,7 +249,7 @@ exports.request = function (options, callback) {
     }
 
     //Spawn the process
-    child = spawn(cmd, args, { cwd: options.cwd || cwd }, function (curl) {
+    var child = spawn(cmd, args, { cwd: options.cwd || cwd }, function (curl) {
 
         //Collect stdout
         curl.stdout.on('data', function (data) {
