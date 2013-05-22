@@ -229,6 +229,9 @@ exports.request = function (options, callback) {
     //Prepare curl args
     var key, values;
     for (key in options) {
+        if (key === 'pretend') {
+            continue;
+        }
         values = Array.isArray(options[key]) ? options[key] : [options[key]];
         values.forEach(function (value) {
             args.push('--' + key);
