@@ -152,13 +152,11 @@ exports.request = function (options, callback) {
     if (!options.encoding && options.encoding !== null) {
         options.encoding = 'utf8';
     }
-    if (options.encoding) {
-        encoding = options.encoding;
-        if (encoding === 'ascii') {
-            options['use-ascii'] = true;
-        }
-        delete options.encoding;
+    encoding = options.encoding;
+    if (encoding === 'ascii') {
+        options['use-ascii'] = true;
     }
+    delete options.encoding;
 
     //Parse POST data
     if (options.data && typeof options.data === 'object') {
@@ -388,7 +386,7 @@ exports.copy = function (obj) {
     var copy = {};
     for (var i in obj) {
         if (typeof obj[i] === 'object') {
-            copy[i] = exports.copy(obj[i]);
+            copy[i] = copy[i] ? exports.copy(obj[i]) : null;
         } else {
             copy[i] = obj[i];
         }
