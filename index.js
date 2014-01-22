@@ -386,7 +386,7 @@ exports.copy = function (obj) {
     var copy = {};
     for (var i in obj) {
         if (typeof obj[i] === 'object') {
-            copy[i] = copy[i] ? exports.copy(obj[i]) : null;
+            copy[i] = obj[i] ? exports.copy(obj[i]) : null;
         } else {
             copy[i] = obj[i];
         }
