@@ -100,6 +100,7 @@ exports.request = function (options, callback) {
       , args = ['--silent', '--show-error', '--no-buffer']
       , start = new Date
       , err
+      , stderr = ''
       , stdoutlen
       , stdout = new Buffer(stdoutlen = 0)
       , encoding
@@ -113,7 +114,9 @@ exports.request = function (options, callback) {
       , timeout;
 
     function finish() {
-        if (err in errors) {
+        if (options.fail && stderr) {
+            err = String(stderr).replace(/^curl: \(\d+\) /, ''); // "curl: (22) The requested URL returned error..." => "The requested URL returned error..."
+        } else if (err in errors) {
             err = errors[err];
         }
         callback.call(scope, err, stdout, {
@@ -269,6 +272,11 @@ exports.request = function (options, callback) {
                 delete options.stderr
             }
         }
+
+        curl.stderr.on('data', function (data) {
+          if (complete) return;
+          stderr += data;
+        });
 
         //Handle curl exit
         curl.on('exit', function (code) {
