@@ -206,14 +206,15 @@ exports.request = function (options, callback) {
         headers[key] = default_headers[key];
     }
     if (options.headers) {
+        var normalised_key;
         for (key in options.headers) {
-            key = key.replace(/[_-]/g, ' ').split(' ').map(function (str) {
+            normalised_key = key.replace(/[_-]/g, ' ').split(' ').map(function (str) {
                 if (str.length) {
                     str = str[0].toUpperCase() + str.substr(1);
                 }
                 return str;
             }).join('-');
-            headers[key] = options.headers[key];
+            headers[normalised_key] = options.headers[key];
         }
         delete options.headers;
     }
