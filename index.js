@@ -394,7 +394,11 @@ exports.concurrent = function (input, concurrency, fn) {
 exports.copy = function (obj) {
     var copy = {};
     for (var i in obj) {
-        if (typeof obj[i] === 'object') {
+        if (Array.isArray(obj[i])) {
+            copy[i] = obj[i].map(function (item) {
+                return item;
+            });
+        } else if (typeof obj[i] === 'object') {
             copy[i] = obj[i] ? exports.copy(obj[i]) : null;
         } else {
             copy[i] = obj[i];
