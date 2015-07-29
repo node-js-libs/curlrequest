@@ -280,7 +280,7 @@ exports.request = function (options, callback) {
         });
 
         //Handle curl exit
-        curl.on('exit', function (code) {
+        curl.on('close', function (code) {
             try {
                 err = code;
                 if (complete) return;
