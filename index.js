@@ -20,8 +20,7 @@ var curl_map = {
  * Default user-agents.
  */
 
-var ua_file = __dirname + '/useragents.txt'
-  , user_agents = fs.readFileSync(ua_file).toString().split('\n').slice(0, -1)
+var user_agents = require('./useragents.js')
   , user_agents_len = user_agents.length;
 
 /**
