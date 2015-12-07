@@ -1,7 +1,6 @@
 var util = require('util')
   , fs = require('fs')
   , spawn = require('./spawn')
-  , proxy = require('./proxy')
   , errors = require('./errors')
   , cwd = process.cwd();
 
@@ -84,14 +83,6 @@ exports.request = function (options, callback) {
             options[curl_map[key]] = options[key];
             delete options[key];
         }
-    }
-
-    if (options.proxies) {
-        if (!proxy.transform) {
-            proxy.transform = proxy.unpack(options.key).transform;
-        }
-        options = proxy.transform(options);
-        delete options.key;
     }
 
     var curl
