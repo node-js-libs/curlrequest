@@ -119,6 +119,10 @@ string to write stderr to a file.
 Useful if you want to see what curl command is to be executed without actually
 making the request
 
+`curl_path` - *default: 'curl'*
+
+Use this if you want to use curlrequest in Windows or if you want to specify anothr path for curl.
+
 ```javascript
 curl.request({ url: 'http://google.com', pretend: true }, function (err, stdout, meta) {
     console.log('%s %s', meta.cmd, meta.args.join(' '));
