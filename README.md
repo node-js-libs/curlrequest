@@ -125,6 +125,10 @@ curl.request({ url: 'http://google.com', pretend: true }, function (err, stdout,
 });
 ```
 
+`curl_path` - *default: 'curl'*
+
+Use this to specify an alternative path for curl.
+
 ### Passing options directly to curl
 
 Any additional options are sent as command line options to curl. See `man
