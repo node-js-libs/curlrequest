@@ -127,7 +127,7 @@ curl.request({ url: 'http://google.com', pretend: true }, function (err, stdout,
 
 `curl_path` - *default: 'curl'*
 
-Use this if you want to use curlrequest in Windows or if you want to specify anothr path for curl.
+Use this to specify an alternative path for curl.
 
 ### Passing options directly to curl
 
