@@ -28,4 +28,4 @@ var userAgents = [
     'Opera/9.80 (Windows NT 6.1 x64; U; en) Presto/2.7.62 Version/11.00'
 ];
 
-exports = userAgents;
+module.exports = userAgents;
