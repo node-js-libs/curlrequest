@@ -293,7 +293,7 @@ exports.request = function (options, callback) {
                         }
                     }
                     if (!valid) {
-                        err = 'response does not contain required string(s)';
+                        err = 'response does not contain required string: ' + require_str[i];
                         stdout = null
                     } else if (!encoding) {
                         stdout = new Buffer(stdout);
@@ -312,7 +312,7 @@ exports.request = function (options, callback) {
                         }
                     }
                     if (!valid) {
-                        err = 'response contains bad string(s)';
+                        err = 'response contains bad string: ' + require_not_str[i];
                         stdout = null
                     } else if (!encoding) {
                         stdout = new Buffer(stdout);
