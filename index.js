@@ -285,15 +285,16 @@ exports.request = function (options, callback) {
                     if (!encoding) {
                         stdout = stdout.toString();
                     }
+                    var str;
                     for (var i = 0, l = require_str.length; i < l; i++) {
-                        if ((util.isRegExp(require_str[i]) && require_str[i].test(stdout))
-                                || stdout.indexOf(require_str[i]) !== -1) {
+                        str = require_str[i];
+                        if ((util.isRegExp(str) && str.test(stdout)) || stdout.indexOf(str) !== -1) {
                             valid = true;
                             break;
                         }
                     }
                     if (!valid) {
-                        err = 'response does not contain required string: ' + require_str[i];
+                        err = 'response does not contain required string: ' + str;
                         stdout = null
                     } else if (!encoding) {
                         stdout = new Buffer(stdout);
@@ -304,15 +305,16 @@ exports.request = function (options, callback) {
                     if (!encoding) {
                         stdout = stdout.toString();
                     }
+                    var str;
                     for (var i = 0, l = require_not_str.length; i < l; i++) {
-                        if ((util.isRegExp(require_not_str[i]) && require_not_str[i].test(stdout))
-                                || stdout.indexOf(require_not_str[i]) !== -1) {
+                        str = require_not_str[i];
+                        if ((util.isRegExp(str) && str.test(stdout)) || stdout.indexOf(str) !== -1) {
                             valid = false;
                             break;
                         }
                     }
                     if (!valid) {
-                        err = 'response contains bad string: ' + require_not_str[i];
+                        err = 'response contains bad string: ' + str;
                         stdout = null
                     } else if (!encoding) {
                         stdout = new Buffer(stdout);
