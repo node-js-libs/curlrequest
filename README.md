@@ -25,6 +25,8 @@ Make a request with curl - callback receives `(err, stdout)` on request
 completion
 
 ```javascript
+var curl = require('curlrequest');
+
 curl.request(options, callback);
 ```
 
