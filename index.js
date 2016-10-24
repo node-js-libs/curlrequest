@@ -87,7 +87,7 @@ exports.request = function (options, callback) {
 
     var curl
       , curl_path = 'curl'
-      , args = ['--silent', '--show-error', '--no-buffer']
+      , args = ['--silent', '--show-error', '--no-buffer', '--globoff']
       , start = new Date
       , err
       , stderr = ''
