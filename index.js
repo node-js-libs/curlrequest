@@ -121,6 +121,7 @@ exports.request = function (options, callback) {
     if (options.curl_path) {
         curl_path = options.curl_path;
         delete options.curl_path;
+        cmd = curl_path
     }
 
     //Follow location by default
@@ -241,6 +242,11 @@ exports.request = function (options, callback) {
     //Simulate the spawn?
     if (options.pretend) {
         return finish();
+    }
+
+    if(options.insecure && options.insecure === true) {
+        args.push('--insecure')
+        delete options.insecure
     }
 
     //Spawn the process
