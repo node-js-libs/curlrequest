@@ -244,11 +244,6 @@ exports.request = function (options, callback) {
         return finish();
     }
 
-    if(options.insecure && options.insecure === true) {
-        args.push('--insecure')
-        delete options.insecure
-    }
-
     //Spawn the process
     var child = spawn(cmd, args, { cwd: options.cwd || cwd }, function (curl) {
 

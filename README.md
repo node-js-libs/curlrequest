@@ -131,10 +131,6 @@ curl.request({ url: 'http://google.com', pretend: true }, function (err, stdout,
 
 Use this to specify an alternative path for curl.
 
-`insecure` 
-
-Use this to make insecure request
-
 ### Passing options directly to curl
 
 Any additional options are sent as command line options to curl. See `man
