@@ -121,6 +121,7 @@ exports.request = function (options, callback) {
     if (options.curl_path) {
         curl_path = options.curl_path;
         delete options.curl_path;
+        cmd = curl_path
     }
 
     //Follow location by default
