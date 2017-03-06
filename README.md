@@ -119,7 +119,12 @@ string to write stderr to a file.
 `pretend` - *default: false*
 
 Useful if you want to see what curl command is to be executed without actually
-making the request
+making the request.
+
+`fail` - *default: false*
+
+When set to true, a failing response body will be returned as the first
+parameter of the callback.
 
 ```javascript
 curl.request({ url: 'http://google.com', pretend: true }, function (err, stdout, meta) {
