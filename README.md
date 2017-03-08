@@ -126,6 +126,10 @@ making the request.
 When set to true, a failing response body will be returned as the first
 parameter of the callback.
 
+`curl_path` - *default: 'curl'*
+
+Use this if you want to use curlrequest in Windows or if you want to specify anothr path for curl.
+
 ```javascript
 curl.request({ url: 'http://google.com', pretend: true }, function (err, stdout, meta) {
     console.log('%s %s', meta.cmd, meta.args.join(' '));
