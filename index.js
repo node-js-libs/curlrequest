@@ -132,8 +132,8 @@ exports.request = function (options, callback) {
         options['max-redirs'] = 3;
     }
 
-    //Add an additional setTimeout for max-time
-    if (options['max-time']) {
+    //Add an additional setTimeout for max-time (only if not in pretend mode)
+    if (options['max-time'] && options.pretend !== true) {
         timeout = setTimeout(function () {
             if (complete) return;
             stderr = 'timeout', stdout = null;
