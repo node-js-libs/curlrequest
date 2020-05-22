@@ -1,4 +1,5 @@
 var child = require('child_process');
+var shellescape = require('shell-escape');
 
 /**
  * Limit the amount of processes that can be spawned per tick.
@@ -13,7 +14,7 @@ var spawned = 0
  */
 
 module.exports = function (cmd, args, options, callback) {
-    var args = Array.prototype.slice.call(arguments);
+    var args = shellescape(Array.prototype.slice.call(arguments));
     if (spawned < max_per_tick) {
         spawned++;
         callback(child.spawn.apply(child, args.slice(0, -1)));
