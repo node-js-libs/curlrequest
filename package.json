@@ -1,16 +1,24 @@
-{ "name"          : "curlrequest",
-  "description"   : "A curl wrapper for node",
-  "version"       : "1.0.1",
-  "homepage"      : "https://github.com/node-js-libs/curlrequest",
-  "author"        : "Chris O'Hara <cohara87@gmail.com>",
-  "main"          : "index",
+{
+  "name": "curlrequest",
+  "description": "A curl wrapper for node",
+  "version": "1.0.1",
+  "homepage": "https://github.com/node-js-libs/curlrequest",
+  "author": "Chris O'Hara <cohara87@gmail.com>",
+  "main": "index",
   "repository": {
     "type": "git",
     "url": "http://github.com/node-js-libs/curlrequest.git"
   },
-  "engines": { "node": ">= 0.4.0" },
-  "licenses": [{
-    "type": "MIT",
-    "url": "http://github.com/node-js-libs/curlrequest/raw/master/LICENSE"
-  }]
+  "engines": {
+    "node": ">= 0.4.0"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://github.com/node-js-libs/curlrequest/raw/master/LICENSE"
+    }
+  ],
+  "dependencies": {
+    "shell-escape": "^0.2.0"
+  }
 }

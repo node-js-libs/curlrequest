@@ -92,7 +92,7 @@ exports.request = function (options, callback) {
       , err
       , stderr = ''
       , stdoutlen
-      , stdout = new Buffer(stdoutlen = 0)
+      , stdout = new Buffer.alloc(stdoutlen = 0)
       , encoding
       , complete
       , cleanup
