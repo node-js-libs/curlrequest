@@ -2,7 +2,8 @@ var util = require('util')
   , fs = require('fs')
   , spawn = require('./spawn')
   , errors = require('./errors')
-  , cwd = process.cwd();
+  , cwd = process.cwd()
+  , path = require('path');
 
 /**
  * Make some curl opts friendlier.
@@ -236,7 +237,13 @@ exports.request = function (options, callback) {
 
     if (options.file) {
         cmd = 'cat';
-        args = [options.file];
+        var rootDirectory = path.resolve(cwd, './');
+        var filename = path.join(rootDirectory, options.file);
+        if (filename.indexOf(rootDirectory) !== 0) {
+            // trying to sneak out of the root directory?
+            return
+        }
+        args = [filename];
     }
 
     //Simulate the spawn?
